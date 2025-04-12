@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineTalk - Watch Now</title>
+    <style>
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #0f0f0f;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Card Container */
+        .movie-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            max-width: 400px;
+            width: 100%;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        /* Blur Background */
+        .card-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://source.unsplash.com/random/800x1200/?movie') center/cover;
+            filter: blur(30px);
+            opacity: 0.6;
+            z-index: -1;
+        }
+
+        /* Content Styling */
+        .card-content {
+            padding: 30px;
+            position: relative;
+            text-align: center;
+        }
+
+        .movie-poster {
+            width: 200px;
+            height: 300px;
+            border-radius: 15px;
+            object-fit: cover;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .watch-btn {
+            background: linear-gradient(45deg, #FF5722, #FF9800);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .watch-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 87, 34, 0.4);
+        }
+
+        .movie-title {
+            color: white;
+            font-size: 24px;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .error-message {
+            color: #ff4444;
+            padding: 20px;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="movie-card">
+        <div class="card-bg"></div>
+        <div class="card-content">
+            <img src="https://source.unsplash.com/random/200x300/?movie-poster" class="movie-poster" alt="Movie Poster">
+            <h2 class="movie-title">Now Streaming</h2>
+            <button class="watch-btn" id="watchButton">
+                <span>🎬</span> WATCH NOW
+            </button>
+        </div>
+    </div>
+
+    <div class="error-message" id="errorDisplay">
+        Invalid or missing streaming token!
+    </div>
+
+    <script>
+        // Security Measures
+        (function() {
+            // Extract token from URL without exposing it
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            
+            // Clean URL after extraction
+            if(token) {
+                history.replaceState({}, document.title, window.location.pathname);
+            }
+
+            // Validate token format
+            const isValidToken = token && token.match(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$/);
+
+            if(!isValidToken) {
+                document.getElementById('errorDisplay').style.display = 'block';
+                document.querySelector('.movie-card').style.display = 'none';
+                return;
+            }
+
+            // MX Player Intent Handler
+            function launchPlayer() {
+                const streamUrl = `https://cinetalk.aman221.workers.dev/proxy/test?token=${encodeURIComponent(token)}`;
+                const intentUrl = `intent:${streamUrl}#Intent;package=com.mxtech.videoplayer.pro;action=android.intent.action.VIEW;type=video/*;end`;
+
+                // Android detection
+                if(/Android/i.test(navigator.userAgent)) {
+                    window.location.href = intentUrl;
+                    setTimeout(() => {
+                        window.location.href = 'mxplayer://stream?url=' + encodeURIComponent(streamUrl);
+                    }, 500);
+                } else {
+                    alert('This feature is only available on Android devices');
+                }
+            }
+
+            // Event Listeners
+            document.getElementById('watchButton').addEventListener('click', launchPlayer);
+        })();
+    </script>
+</body>
+</html>
