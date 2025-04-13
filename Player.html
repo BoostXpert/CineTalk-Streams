@@ -104,16 +104,19 @@
     <div class="movie-card">
         <div class="card-bg"></div>
         <div class="card-content">
-            <img src="image.jpg" class="movie-poster" alt="Movie Poster">
-            <h2 class="movie-title">Now Streaming</h2>
+            <img src="poster.jpg" 
+                 class="movie-poster" 
+                 alt="Movie Poster"
+                 id="moviePoster">
+            <h2 class="movie-title" id="movieTitle">Loading...</h2>
+            <div class="movie-meta" id="movieMeta">
+                <div id="resolutionTag">HD</div>
+                <div id="durationTag">2h 18min</div>
+            </div>
             <button class="watch-btn" id="watchButton">
                 <span>🎬</span> WATCH NOW
             </button>
         </div>
-    </div>
-
-    <div class="error-message" id="errorDisplay">
-        Invalid or missing streaming token!
     </div>
 
     <script>
